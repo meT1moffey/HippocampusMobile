@@ -16,16 +16,10 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.InputStream
-import kotlin.experimental.xor
 
 
 class MainActivity : AppCompatActivity() {
-    private val directoryName = "Encoded Files"
+    private val manager = EncodedFilesManager("Encoded Files")
     private val filename = "test.jpg.vo"
 
     private fun storageAvalible(): Boolean {
@@ -59,57 +53,20 @@ class MainActivity : AppCompatActivity() {
         builder.create().show()
     }
 
-    private fun getFile(filename: String): File? {
-        if (!storageAvalible()) {
-            requestStoragePermission()
-            return null
-        }
-        else {
-            val dir = File(Environment.getExternalStorageDirectory().absolutePath, directoryName)
-            if (!dir.exists())
-                dir.mkdir()
 
-            return File(dir, filename)
-        }
-    }
-
-    private fun ByteArray.code(key: ByteArray) : ByteArray {
-        this.forEachIndexed { idx, value ->
-            this[idx] = value xor key[idx % key.size]
-        }
-        return this
-    }
-
-    private fun save(stream: InputStream, filename: String, key: String) {
-        val file = getFile(filename) ?: return
-        file.createNewFile()
-        val saveStream = FileOutputStream(file)
-
-        saveStream.write(stream.readBytes().code(key.toByteArray()))
-        stream.close()
-        saveStream.close()
-    }
-
-    private fun load(filename: String, key: String): ByteArray? {
-        val file = getFile(filename) ?: return null
-        return try {
-            val fileStream = FileInputStream(file)
-
-            fileStream.readBytes().code(key.toByteArray())
-        } catch (e: FileNotFoundException) {
-            Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show()
-            null
-        }
-    }
 
     private val loadUri = registerForActivityResult(ActivityResultContracts.GetContent()) { newUri: Uri? ->
         val stream = contentResolver.openInputStream(newUri ?: return@registerForActivityResult)!!
 
-        save(stream, filename, "123")
+        manager.save(stream, filename, "123")
     }
 
     private fun show() {
-        val image = load(filename, "123") ?: return
+        val image = manager.load(filename, "123")
+        if(image == null) {
+            Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show()
+            return
+        }
         val selectedImage = BitmapFactory.decodeByteArray(image, 0, image.size)
 
         findViewById<ImageView>(R.id.main_image).setImageBitmap(selectedImage)
