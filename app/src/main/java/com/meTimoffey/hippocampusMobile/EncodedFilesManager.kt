@@ -8,9 +8,10 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import kotlin.experimental.xor
 
-class EncodedFilesManager(private val directoryName: String) {
+class EncodedFilesManager(directoryName: String) {
+    private val dir = File(Environment.getExternalStorageDirectory().absolutePath, directoryName)
+
     private fun getFile(filename: String): File {
-        val dir = File(Environment.getExternalStorageDirectory().absolutePath, directoryName)
         if (!dir.exists())
             dir.mkdir()
 

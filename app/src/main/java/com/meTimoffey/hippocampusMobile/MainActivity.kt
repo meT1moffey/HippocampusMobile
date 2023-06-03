@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity() {
     private val manager = EncodedFilesManager("Encoded Files")
     private val filename = "test.jpg.vo"
+    private val code = "123"
 
     private fun storageAvalible(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -53,16 +54,14 @@ class MainActivity : AppCompatActivity() {
         builder.create().show()
     }
 
-
-
     private val loadUri = registerForActivityResult(ActivityResultContracts.GetContent()) { newUri: Uri? ->
         val stream = contentResolver.openInputStream(newUri ?: return@registerForActivityResult)!!
 
-        manager.save(stream, filename, "123")
+        manager.save(stream, filename, code)
     }
 
     private fun show() {
-        val image = manager.load(filename, "123")
+        val image = manager.load(filename, code)
         if(image == null) {
             Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show()
             return
