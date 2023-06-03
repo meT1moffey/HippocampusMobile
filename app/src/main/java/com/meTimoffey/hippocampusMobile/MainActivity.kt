@@ -20,16 +20,13 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
-import java.security.Permission
-import java.security.Permissions
+import java.io.InputStream
 import kotlin.experimental.xor
 
 
 class MainActivity : AppCompatActivity() {
     private val directoryName = "Encoded Files"
     private val filename = "test.jpg.vo"
-    private lateinit var file: File
-    private var uri: Uri? = null
 
     private fun storageAvalible(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -62,6 +59,20 @@ class MainActivity : AppCompatActivity() {
         builder.create().show()
     }
 
+    private fun getFile(filename: String): File? {
+        if (!storageAvalible()) {
+            requestStoragePermission()
+            return null
+        }
+        else {
+            val dir = File(Environment.getExternalStorageDirectory().absolutePath, directoryName)
+            if (!dir.exists())
+                dir.mkdir()
+
+            return File(dir, filename)
+        }
+    }
+
     private fun ByteArray.code(key: ByteArray) : ByteArray {
         this.forEachIndexed { idx, value ->
             this[idx] = value xor key[idx % key.size]
@@ -69,32 +80,37 @@ class MainActivity : AppCompatActivity() {
         return this
     }
 
-    private val loadUri = registerForActivityResult(ActivityResultContracts.GetContent()) { newUri: Uri? ->
-        uri = newUri
-
-        val stream = contentResolver.openInputStream(uri!!) ?: return@registerForActivityResult
-
+    private fun save(stream: InputStream, filename: String, key: String) {
+        val file = getFile(filename) ?: return
         file.createNewFile()
         val saveStream = FileOutputStream(file)
 
-        saveStream.write(stream.readBytes().code("123".toByteArray()))
+        saveStream.write(stream.readBytes().code(key.toByteArray()))
         stream.close()
         saveStream.close()
     }
 
-    private fun show() {
-        val imageStream: FileInputStream
-        try {
-            imageStream = FileInputStream(file)
-        }
-        catch(e: FileNotFoundException) {
-            Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show()
-            return
-        }
+    private fun load(filename: String, key: String): ByteArray? {
+        val file = getFile(filename) ?: return null
+        return try {
+            val fileStream = FileInputStream(file)
 
-        val image = imageStream.readBytes().code("123".toByteArray())
+            fileStream.readBytes().code(key.toByteArray())
+        } catch (e: FileNotFoundException) {
+            Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show()
+            null
+        }
+    }
+
+    private val loadUri = registerForActivityResult(ActivityResultContracts.GetContent()) { newUri: Uri? ->
+        val stream = contentResolver.openInputStream(newUri ?: return@registerForActivityResult)!!
+
+        save(stream, filename, "123")
+    }
+
+    private fun show() {
+        val image = load(filename, "123") ?: return
         val selectedImage = BitmapFactory.decodeByteArray(image, 0, image.size)
-        imageStream.close()
 
         findViewById<ImageView>(R.id.main_image).setImageBitmap(selectedImage)
     }
@@ -104,15 +120,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (!storageAvalible()) {
+        if (!storageAvalible())
             requestStoragePermission()
-        }
-
-        val dir = File(Environment.getExternalStorageDirectory().absolutePath, directoryName)
-        if(!dir.exists())
-            dir.mkdir()
-
-        file = File(dir, filename)
 
         findViewById<Button>(R.id.select_button).setOnClickListener {
             if(!storageAvalible())
