@@ -17,6 +17,8 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import java.io.File
+import java.io.FileOutputStream
 
 
 class EncodeActivity : AppCompatActivity() {
@@ -86,8 +88,31 @@ class EncodeActivity : AppCompatActivity() {
         findViewById<Button>(R.id.select_button).setOnClickListener {
             if(!storageAvailable())
                 requestStoragePermission()
-            else
-                loadUri.launch("image/*")
+            else {
+                when(dropdown.selectedItem.toString()) {
+                    "Text" -> {
+                        val textField = EditText(this)
+
+                        AlertDialog.Builder(this)
+                            .setTitle("Text input")
+                            .setMessage("Enter text to encode")
+                            .setView(textField)
+                            .setPositiveButton(
+                                "Done"
+                            ) { _, _ ->
+                                val cache = File(getExternalFilesDir(null), "__cache__")
+                                cache.createNewFile()
+                                FileOutputStream(cache).write(textField.text.toString().toByteArray())
+                                uri = Uri.fromFile(cache)
+                            }
+                            .setNegativeButton(
+                                "Cancel"
+                            ) { _, _ -> }
+                            .show()
+                    }
+                    "Image" -> loadUri.launch("image/*")
+                }
+            }
         }
         findViewById<Button>(R.id.launch).setOnClickListener {
             if(uri == null) {
