@@ -23,7 +23,6 @@ import java.io.FileOutputStream
 
 class EncodeActivity : AppCompatActivity() {
     private val manager = EncodedFilesManager("Encoded Files")
-    private val filename = "test.jpg.vo"
     private var uri: Uri? = null
 
     private fun storageAvailable(): Boolean {
@@ -115,17 +114,26 @@ class EncodeActivity : AppCompatActivity() {
             }
         }
         findViewById<Button>(R.id.launch).setOnClickListener {
+            val name = findViewById<EditText>(R.id.name_field).text.toString()
+            val key = findViewById<EditText>(R.id.key_field).text.toString()
+
             if(uri == null) {
                 Toast.makeText(this, "Select file to encode", Toast.LENGTH_LONG).show()
             }
-            else if(findViewById<EditText>(R.id.key_field).text.isEmpty()) {
+            else if(name.isEmpty()) {
+                Toast.makeText(this, "Enter new file name", Toast.LENGTH_LONG).show()
+            }
+            else if(key.isEmpty()) {
                 Toast.makeText(this, "Enter encode key", Toast.LENGTH_LONG).show()
             }
             else {
                 val stream = contentResolver.openInputStream(uri!!)!!
-                manager.save(stream, filename, findViewById<EditText>(R.id.key_field).text.toString())
+                manager.save(stream, "$name.vo", key)
                 Toast.makeText(this, "File encoded successfully", Toast.LENGTH_LONG).show()
             }
+        }
+        findViewById<Button>(R.id.goto_selection).setOnClickListener {
+            startActivity(Intent(this, ExplorerActivity::class.java))
         }
     }
 }

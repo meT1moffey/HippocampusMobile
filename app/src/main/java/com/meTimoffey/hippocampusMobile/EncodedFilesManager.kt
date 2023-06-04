@@ -46,4 +46,6 @@ class EncodedFilesManager(directoryName: String) {
             null
         }
     }
+
+    fun filesList() : Array<out String>? = dir.list()
 }
