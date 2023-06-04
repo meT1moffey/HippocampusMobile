@@ -4,24 +4,25 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.ImageView
+import android.widget.EditText
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 
 
-class MainActivity : AppCompatActivity() {
+class EncodeActivity : AppCompatActivity() {
     private val manager = EncodedFilesManager("Encoded Files")
     private val filename = "test.jpg.vo"
-    private val code = "123"
+    private var uri: Uri? = null
 
     private fun storageAvailable(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -55,29 +56,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val loadUri = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        val stream = contentResolver.openInputStream(uri ?: return@registerForActivityResult)!!
-
-        manager.save(stream, filename, code)
+        this.uri = uri ?: return@registerForActivityResult
     }
 
-    private fun show() {
-        val image = manager.load(filename, code)
-        if(image == null) {
-            Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show()
-            return
-        }
-        val selectedImage = BitmapFactory.decodeByteArray(image, 0, image.size)
-
-        findViewById<ImageView>(R.id.main_image).setImageBitmap(selectedImage)
-    }
+//    private fun show() {
+//        val image = manager.load(filename, code)
+//        if(image == null) {
+//            Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show()
+//            return
+//        }
+//        val selectedImage = BitmapFactory.decodeByteArray(image, 0, image.size)
+//
+//        findViewById<ImageView>(R.id.main_image).setImageBitmap(selectedImage)
+//    }
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.encode_activity)
 
         if (!storageAvailable())
             requestStoragePermission()
+
+        val dropdown = findViewById<Spinner>(R.id.file_type)
+        val items = arrayOf("Text", "Image")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
+        dropdown.adapter = adapter
 
         findViewById<Button>(R.id.select_button).setOnClickListener {
             if(!storageAvailable())
@@ -85,6 +89,18 @@ class MainActivity : AppCompatActivity() {
             else
                 loadUri.launch("image/*")
         }
-        findViewById<Button>(R.id.show_button).setOnClickListener { show() }
+        findViewById<Button>(R.id.launch).setOnClickListener {
+            if(uri == null) {
+                Toast.makeText(this, "Select file to encode", Toast.LENGTH_LONG).show()
+            }
+            else if(findViewById<EditText>(R.id.key_field).text.isEmpty()) {
+                Toast.makeText(this, "Enter encode key", Toast.LENGTH_LONG).show()
+            }
+            else {
+                val stream = contentResolver.openInputStream(uri!!)!!
+                manager.save(stream, filename, findViewById<EditText>(R.id.key_field).text.toString())
+                Toast.makeText(this, "File encoded successfully", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 }
