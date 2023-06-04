@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     private val filename = "test.jpg.vo"
     private val code = "123"
 
-    private fun storageAvalible(): Boolean {
+    private fun storageAvailable(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Environment.isExternalStorageManager()
         } else {
@@ -54,8 +54,8 @@ class MainActivity : AppCompatActivity() {
         builder.create().show()
     }
 
-    private val loadUri = registerForActivityResult(ActivityResultContracts.GetContent()) { newUri: Uri? ->
-        val stream = contentResolver.openInputStream(newUri ?: return@registerForActivityResult)!!
+    private val loadUri = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        val stream = contentResolver.openInputStream(uri ?: return@registerForActivityResult)!!
 
         manager.save(stream, filename, code)
     }
@@ -76,11 +76,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (!storageAvalible())
+        if (!storageAvailable())
             requestStoragePermission()
 
         findViewById<Button>(R.id.select_button).setOnClickListener {
-            if(!storageAvalible())
+            if(!storageAvailable())
                 requestStoragePermission()
             else
                 loadUri.launch("image/*")
