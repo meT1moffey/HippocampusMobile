@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import java.nio.charset.Charset
@@ -26,6 +27,9 @@ class DecodeActivity : Activity() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
         dropdown.adapter = adapter
 
+        val filename = intent.getStringExtra("filename")!!
+        findViewById<TextView>(R.id.file_name).text = filename
+
         findViewById<Button>(R.id.show).setOnClickListener {
             val key = findViewById<EditText>(R.id.decode_key_field).text.toString()
 
@@ -33,7 +37,7 @@ class DecodeActivity : Activity() {
                 Toast.makeText(this, "Enter decode key", Toast.LENGTH_LONG).show()
             }
             else {
-                val file = manager.load(intent.extras?.getString("filename")!!, key)
+                val file = manager.load(filename, key)
                 if(file == null) {
                     Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show()
                     return@setOnClickListener
@@ -42,13 +46,10 @@ class DecodeActivity : Activity() {
                 val view = Intent(this, ViewActivity::class.java)
 
                 view.putExtra("type", dropdown.selectedItem.toString())
+                view.putExtra("data", file)
                 when(dropdown.selectedItem.toString()) {
-                    "Text" -> view.putExtra("text", file.toString(Charset.defaultCharset()))
                     "Image" ->
-                        try {
-                            view.putExtra("image", BitmapFactory.decodeByteArray(file, 0, file.size)!!)
-                        }
-                        catch(e: NullPointerException) {
+                        if(BitmapFactory.decodeByteArray(file, 0, file.size) == null) {
                             Toast.makeText(this, "Key is incorrect or file is not an image", Toast.LENGTH_LONG).show()
                             return@setOnClickListener
                         }
@@ -56,9 +57,6 @@ class DecodeActivity : Activity() {
 
                 startActivity(view)
             }
-        }
-        findViewById<Button>(R.id.back).setOnClickListener {
-            startActivity(Intent(this, ExplorerActivity::class.java))
         }
     }
 }
