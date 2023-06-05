@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import java.nio.charset.Charset
 
 class DecodeActivity : Activity() {
     private val manager = EncodedFilesManager()
@@ -38,9 +39,11 @@ class DecodeActivity : Activity() {
                     return@setOnClickListener
                 }
 
-                val view = Intent(this, DecodeActivity::class.java)
+                val view = Intent(this, ViewActivity::class.java)
+
+                view.putExtra("type", dropdown.selectedItem.toString())
                 when(dropdown.selectedItem.toString()) {
-                    "Text" -> view.putExtra("text", file.toString())
+                    "Text" -> view.putExtra("text", file.toString(Charset.defaultCharset()))
                     "Image" ->
                         try {
                             view.putExtra("image", BitmapFactory.decodeByteArray(file, 0, file.size)!!)
@@ -51,7 +54,7 @@ class DecodeActivity : Activity() {
                         }
                 }
 
-                //startActivity(view)
+                startActivity(view)
             }
         }
         findViewById<Button>(R.id.back).setOnClickListener {

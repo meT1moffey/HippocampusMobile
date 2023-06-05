@@ -30,5 +30,6 @@
 
         <activity android:name=".ExplorerActivity"/>
         <activity android:name=".DecodeActivity"/>
+        <activity android:name=".ViewActivity"/>
     </application>
 </manifest>
