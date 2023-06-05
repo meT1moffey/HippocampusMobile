@@ -39,9 +39,9 @@ class EncodedFilesManager(directoryName : String = "Encoded Files") {
     fun load(filename: String, key: String): ByteArray? {
         val file = getFile(filename)
         return try {
-            val fileStream = FileInputStream(file)
-
-            fileStream.readBytes().code(key.toByteArray())
+            FileInputStream(file).use { stream ->
+                stream.readBytes().code(key.toByteArray())
+            }
         } catch (e: FileNotFoundException) {
             null
         }
