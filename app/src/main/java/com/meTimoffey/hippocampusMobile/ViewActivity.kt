@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 
@@ -12,16 +13,17 @@ class ViewActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val view: View
         when(intent.extras?.getString("type")) {
             "Text" -> {
-                setContentView(R.layout.text_view_activity)
-                Log.d("log", intent.extras?.getString("text")!!)
-                findViewById<TextView>(R.id.text_show).text = intent.extras?.getString("text")
+                view = TextView(this)
+                view.text = intent.extras?.getString("text")
             }
             else -> {
                 // Unreachable
                 return
             }
         }
+        setContentView(view)
     }
 }
