@@ -9,7 +9,7 @@ import java.io.InputStream
 import kotlin.experimental.xor
 
 
-class EncodedFilesManager(directoryName: String) {
+class EncodedFilesManager(directoryName : String = "Encoded Files") {
     private val dir = File(Environment.getExternalStorageDirectory().absolutePath, directoryName)
 
     private fun getFile(filename: String): File {

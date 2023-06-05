@@ -22,7 +22,7 @@ import java.io.FileOutputStream
 
 
 class EncodeActivity : AppCompatActivity() {
-    private val manager = EncodedFilesManager("Encoded Files")
+    private val manager = EncodedFilesManager()
     private var uri: Uri? = null
 
     private fun storageAvailable(): Boolean {
@@ -59,17 +59,6 @@ class EncodeActivity : AppCompatActivity() {
     private val loadUri = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         this.uri = uri ?: return@registerForActivityResult
     }
-
-//    private fun show() {
-//        val image = manager.load(filename, code)
-//        if(image == null) {
-//            Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show()
-//            return
-//        }
-//        val selectedImage = BitmapFactory.decodeByteArray(image, 0, image.size)
-//
-//        findViewById<ImageView>(R.id.main_image).setImageBitmap(selectedImage)
-//    }
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {

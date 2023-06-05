@@ -21,7 +21,7 @@ class ExplorerActivity : Activity() {
             startActivity(Intent(this, EncodeActivity::class.java))
         }
 
-        val files = EncodedFilesManager("Encoded Files").filesList()
+        val files = EncodedFilesManager().filesList()
 
         val scroll = findViewById<LinearLayout>(R.id.explorer)
         if(files == null) {
@@ -30,11 +30,13 @@ class ExplorerActivity : Activity() {
             scroll.addView(textView)
         }
         else {
-            files.forEach { it ->
+            files.forEach { name ->
                 val file = Button(this)
-                file.text = it
+                file.text = name
                 file.setOnClickListener {
-                    // pass
+                    val decoder = Intent(this, DecodeActivity::class.java)
+                    decoder.putExtra("filename", name)
+                    startActivity(decoder)
                 }
 
                 scroll.addView(file)
