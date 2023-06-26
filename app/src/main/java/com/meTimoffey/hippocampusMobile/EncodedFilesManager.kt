@@ -53,5 +53,5 @@ class EncodedFilesManager(directoryName : String = "Encoded Files") {
         }
     }
 
-    fun filesList() : Array<out String>? = dir.list()
+    fun filesList() : List<String>? = dir.list()?.filter {it != cache}
 }
