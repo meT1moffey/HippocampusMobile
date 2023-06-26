@@ -22,7 +22,6 @@ import java.io.FileOutputStream
 
 
 class EncodeActivity : AppCompatActivity() {
-    private val manager = EncodedFilesManager()
     private var uri: Uri? = null
 
     private fun storageAvailable(): Boolean {
@@ -64,6 +63,9 @@ class EncodeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.encode_activity)
+
+        val path = intent.extras?.getString("path")!!
+        val manager = EncodedFilesManager(path)
 
         if (!storageAvailable())
             requestStoragePermission()

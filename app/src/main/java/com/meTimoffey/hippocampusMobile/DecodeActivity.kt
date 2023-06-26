@@ -2,7 +2,6 @@ package com.meTimoffey.hippocampusMobile
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.widget.ArrayAdapter
@@ -12,15 +11,15 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import java.nio.charset.Charset
 
 class DecodeActivity : Activity() {
-    private val manager = EncodedFilesManager()
-
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.decode_activity)
+
+        val path = intent.extras?.getString("path")!!
+        val manager = EncodedFilesManager(path)
 
         val dropdown = findViewById<Spinner>(R.id.show_type)
         val items = arrayOf("Text", "Image")
@@ -41,7 +40,8 @@ class DecodeActivity : Activity() {
             val view = Intent(this, ViewActivity::class.java)
 
             view.putExtra("type", dropdown.selectedItem.toString())
-            manager.quick_save(file)
+            view.putExtra("path", path)
+            manager.quickSave(file)
 
             startActivity(view)
         }

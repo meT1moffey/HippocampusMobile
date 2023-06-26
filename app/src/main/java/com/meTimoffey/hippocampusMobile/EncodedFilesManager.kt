@@ -11,9 +11,9 @@ import kotlin.experimental.xor
 
 
 class EncodedFilesManager(directoryName : String = "Encoded Files") {
-    private val dir = File(Environment.getExternalStorageDirectory().absolutePath, directoryName)
+    private val dir = File(Environment.getExternalStorageDirectory(), directoryName)
     private val cache = "__cache__"
-    private val cache_key = "enough_secure_key"
+    private val cacheKey = "enough_secure_key"
 
     private fun getFile(filename: String): File {
         if (!dir.exists())
@@ -39,8 +39,8 @@ class EncodedFilesManager(directoryName : String = "Encoded Files") {
         saveStream.close()
     }
 
-    fun quick_save(bytes: ByteArray) = save(ByteArrayInputStream(bytes), cache, cache_key)
-    fun quick_load() = load(cache, cache_key)
+    fun quickSave(bytes: ByteArray) = save(ByteArrayInputStream(bytes), cache, cacheKey)
+    fun quickLoad() = load(cache, cacheKey)
 
     fun load(filename: String, key: String): ByteArray? {
         val file = getFile(filename)
@@ -54,4 +54,12 @@ class EncodedFilesManager(directoryName : String = "Encoded Files") {
     }
 
     fun filesList() : List<String>? = dir.list()?.filter {it != cache}
+
+    fun makeDirectory(name: String) = getFile(name).mkdir()
+
+    fun fileExist(name: String) = getFile(name).isFile
+
+    fun relativePath() = Environment.getExternalStorageDirectory().toURI().relativize(dir.toURI()).path
+
+    fun directoryRelativePath(subDirName: String) = relativePath() + File.separator + subDirName
 }
