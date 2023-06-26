@@ -20,7 +20,7 @@ class EncodedFilesManager(directoryName : String = "Encoded Files") {
     }
 
     private fun ByteArray.code(key: ByteArray) : ByteArray {
-        this.forEachIndexed { idx, value ->
+        if(key.isNotEmpty()) this.forEachIndexed { idx, value ->
             this[idx] = value xor key[idx % key.size]
         }
         return this

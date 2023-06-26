@@ -112,13 +112,16 @@ class EncodeActivity : AppCompatActivity() {
             else if(name.isEmpty()) {
                 Toast.makeText(this, "Enter new file name", Toast.LENGTH_LONG).show()
             }
-            else if(key.isEmpty()) {
-                Toast.makeText(this, "Enter encode key", Toast.LENGTH_LONG).show()
-            }
             else {
+                val file_suffix = when(dropdown.selectedItem.toString()) {
+                        "Text" -> ".txt"
+                        "Image" -> ".jpg"
+                        else -> ""
+                    }
+
                 val stream = contentResolver.openInputStream(uri!!)!!
-                manager.save(stream, "$name.vo", key)
-                Toast.makeText(this, "File encoded successfully", Toast.LENGTH_LONG).show()
+                manager.save(stream, name + file_suffix + if (key.isNotEmpty()) ".vo" else "", key)
+                Toast.makeText(this, "File added successfully", Toast.LENGTH_LONG).show()
             }
         }
         findViewById<Button>(R.id.goto_selection).setOnClickListener {

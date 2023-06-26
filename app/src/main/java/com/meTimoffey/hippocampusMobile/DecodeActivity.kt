@@ -33,30 +33,25 @@ class DecodeActivity : Activity() {
         findViewById<Button>(R.id.show).setOnClickListener {
             val key = findViewById<EditText>(R.id.decode_key_field).text.toString()
 
-            if (key.isEmpty()) {
-                Toast.makeText(this, "Enter decode key", Toast.LENGTH_LONG).show()
+            val file = manager.load(filename, key)
+            if(file == null) {
+                Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
             }
-            else {
-                val file = manager.load(filename, key)
-                if(file == null) {
-                    Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show()
-                    return@setOnClickListener
-                }
 
-                val view = Intent(this, ViewActivity::class.java)
+            val view = Intent(this, ViewActivity::class.java)
 
-                view.putExtra("type", dropdown.selectedItem.toString())
-                view.putExtra("data", file)
-                when(dropdown.selectedItem.toString()) {
-                    "Image" ->
-                        if(BitmapFactory.decodeByteArray(file, 0, file.size) == null) {
-                            Toast.makeText(this, "Key is incorrect or file is not an image", Toast.LENGTH_LONG).show()
-                            return@setOnClickListener
-                        }
-                }
-
-                startActivity(view)
+            view.putExtra("type", dropdown.selectedItem.toString())
+            view.putExtra("data", file)
+            when(dropdown.selectedItem.toString()) {
+                "Image" ->
+                    if(BitmapFactory.decodeByteArray(file, 0, file.size) == null) {
+                        Toast.makeText(this, "Key is incorrect or file is not an image", Toast.LENGTH_LONG).show()
+                        return@setOnClickListener
+                    }
             }
+
+            startActivity(view)
         }
     }
 }

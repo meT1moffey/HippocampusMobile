@@ -1,16 +1,13 @@
 package com.meTimoffey.hippocampusMobile
 
 import android.app.Activity
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import java.io.Serializable
 import java.nio.charset.Charset
 
 class ViewActivity : Activity() {
