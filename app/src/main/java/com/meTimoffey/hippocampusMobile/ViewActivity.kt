@@ -16,7 +16,7 @@ class ViewActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val data = intent.getByteArrayExtra("data")!!
+        val data = EncodedFilesManager().quick_load()!!
         val view: View
         when(intent.extras?.getString("type")) {
             "Text" -> {

@@ -32,7 +32,6 @@ class DecodeActivity : Activity() {
 
         findViewById<Button>(R.id.show).setOnClickListener {
             val key = findViewById<EditText>(R.id.decode_key_field).text.toString()
-
             val file = manager.load(filename, key)
             if(file == null) {
                 Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show()
@@ -42,7 +41,7 @@ class DecodeActivity : Activity() {
             val view = Intent(this, ViewActivity::class.java)
 
             view.putExtra("type", dropdown.selectedItem.toString())
-            view.putExtra("data", file)
+            manager.quick_save(file)
 
             startActivity(view)
         }
