@@ -43,13 +43,6 @@ class DecodeActivity : Activity() {
 
             view.putExtra("type", dropdown.selectedItem.toString())
             view.putExtra("data", file)
-            when(dropdown.selectedItem.toString()) {
-                "Image" ->
-                    if(BitmapFactory.decodeByteArray(file, 0, file.size) == null) {
-                        Toast.makeText(this, "Key is incorrect or file is not an image", Toast.LENGTH_LONG).show()
-                        return@setOnClickListener
-                    }
-            }
 
             startActivity(view)
         }

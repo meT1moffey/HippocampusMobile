@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import java.nio.charset.Charset
 
@@ -24,7 +25,12 @@ class ViewActivity : Activity() {
             }
             "Image" -> {
                 view = ImageView(this)
-                view.setImageBitmap(BitmapFactory.decodeByteArray(data, 0, data.size))
+                val img = BitmapFactory.decodeByteArray(data, 0, data.size)
+                if (img == null) {
+                    Toast.makeText(this, "Key is incorrect or file is not an image", Toast.LENGTH_LONG).show()
+                    finish()
+                }
+                view.setImageBitmap(img)
             }
             else -> {
                 // Unreachable
