@@ -13,6 +13,10 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 
 class DecodeActivity : Activity() {
+    private val view_activities = mapOf(
+        "Text"  to TextViewActivity::class.java,
+        "Image" to ImageViewActivity::class.java
+    )
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +26,7 @@ class DecodeActivity : Activity() {
         val manager = EncodedFilesManager(path)
 
         val dropdown = findViewById<Spinner>(R.id.show_type)
-        val items = arrayOf("Text", "Image")
+        val items = view_activities.keys.toTypedArray()
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
         dropdown.adapter = adapter
 
@@ -37,9 +41,8 @@ class DecodeActivity : Activity() {
                 return@setOnClickListener
             }
 
-            val view = Intent(this, ViewActivity::class.java)
+            val view = Intent(this, view_activities[dropdown.selectedItem.toString()])
 
-            view.putExtra("type", dropdown.selectedItem.toString())
             view.putExtra("path", path)
             manager.quickSave(file)
 

@@ -30,6 +30,7 @@
 
         <activity android:name=".EncodeActivity"/>
         <activity android:name=".DecodeActivity"/>
-        <activity android:name=".ViewActivity"/>
+        <activity android:name=".TextViewActivity"/>
+        <activity android:name=".ImageViewActivity"/>
     </application>
 </manifest>
