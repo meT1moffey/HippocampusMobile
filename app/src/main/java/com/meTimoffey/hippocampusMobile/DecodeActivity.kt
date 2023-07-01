@@ -37,8 +37,8 @@ class DecodeActivity : Activity() {
 
         val nameParts = filename.split('.')
         val isEncoded = nameParts.last() == "vo" && nameParts.size > 1 // file named "vo" is not a *.vo file
-        val filetype = (fileSuffixes.firstOrNull {
-                it.second == if (isEncoded) nameParts.dropLast(1).last() else nameParts.last()})?.first
+        val filetype = fileSuffixes.firstOrNull {
+                it.second == if (isEncoded) nameParts.dropLast(1).last() else nameParts.last()}?.first
 
         if(filetype == null) {
             val dropdown = Spinner(this)
@@ -53,8 +53,8 @@ class DecodeActivity : Activity() {
                 .setPositiveButton(
                     "Done"
                 ) { _, _ ->
-                    val newFiletype = "." + (fileSuffixes.firstOrNull {
-                    it.first == dropdown.selectedItem.toString()})?.second
+                    val newFiletype = "." + fileSuffixes.firstOrNull {
+                    it.first == dropdown.selectedItem.toString()}?.second
 
                     val newName = if(isEncoded) nameParts.dropLast(1).joinToString(".") + newFiletype +  ".vo"
                                   else filename + newFiletype
