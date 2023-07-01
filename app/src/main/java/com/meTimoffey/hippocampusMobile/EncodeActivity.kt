@@ -115,19 +115,26 @@ class EncodeActivity : AppCompatActivity() {
                 Toast.makeText(this, "Enter new file name", Toast.LENGTH_LONG).show()
             }
             else {
-                val file_suffix = when(dropdown.selectedItem.toString()) {
+                val fileSuffix = when(dropdown.selectedItem.toString()) {
                         "Text" -> ".txt"
                         "Image" -> ".jpg"
                         else -> ""
                     }
-
-                val stream = contentResolver.openInputStream(uri!!)!!
-                manager.save(stream, name + file_suffix + if (key.isNotEmpty()) ".vo" else "", key)
-                Toast.makeText(this, "File added successfully", Toast.LENGTH_LONG).show()
+                val fullName = name + fileSuffix + if (key.isNotEmpty()) ".vo" else ""
+                if(manager.fileExist(fullName)) {
+                    Toast.makeText(this, "File with such name already exist", Toast.LENGTH_LONG).show()
+                }
+                else {
+                    val stream = contentResolver.openInputStream(uri!!)!!
+                    manager.save(stream, fullName, key)
+                    Toast.makeText(this, "File added successfully", Toast.LENGTH_LONG).show()
+                }
             }
         }
         findViewById<Button>(R.id.goto_selection).setOnClickListener {
-            startActivity(Intent(this, ExplorerActivity::class.java))
+            val explorer = Intent(this, ExplorerActivity::class.java)
+            explorer.putExtra("path", manager.relativePath())
+            startActivity(explorer)
         }
     }
 }
