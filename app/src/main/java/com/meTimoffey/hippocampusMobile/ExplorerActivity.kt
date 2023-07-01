@@ -50,7 +50,7 @@ class ExplorerActivity : Activity() {
         val files = manager.filesList()
 
         val scroll = findViewById<LinearLayout>(R.id.explorer)
-        if(files == null) {
+        if(files.isEmpty()) {
             val textView = TextView(this)
             textView.text = "There is no files available"
             scroll.addView(textView)

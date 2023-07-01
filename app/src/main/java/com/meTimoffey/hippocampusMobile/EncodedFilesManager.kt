@@ -53,7 +53,7 @@ class EncodedFilesManager(directoryName : String = "Encoded Files") {
         }
     }
 
-    fun filesList() : List<String>? = dir.list()?.filter {it != cache}
+    fun filesList() : List<String> = dir.list()!!.filter {it != cache}
 
     fun makeDirectory(name: String) = getFile(name).mkdir()
 
