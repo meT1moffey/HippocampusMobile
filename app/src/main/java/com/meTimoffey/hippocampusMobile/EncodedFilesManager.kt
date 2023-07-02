@@ -62,6 +62,7 @@ class EncodedFilesManager(directoryName : String = "Encoded Files") {
     fun relativePath(): String = Environment.getExternalStorageDirectory().toURI().relativize(dir.toURI()).path
 
     fun directoryRelativePath(subDirName: String) = relativePath() + File.separator + subDirName
+    fun parentDirectory() = File(relativePath()).parent
 
     fun renameFile(name: String, newName: String) = File(dir, name).renameTo(File(dir, newName))
 }

@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -25,7 +26,7 @@ class ExplorerActivity : Activity() {
 
         findViewById<Button>(R.id.goto_encode).setOnClickListener {
             val encoder = Intent(this, EncodeActivity::class.java)
-            encoder.putExtra("path", manager.relativePath())
+                .putExtra("path", manager.relativePath())
             startActivity(encoder)
         }
         findViewById<Button>(R.id.new_dir).setOnClickListener {
@@ -35,16 +36,21 @@ class ExplorerActivity : Activity() {
                 .setTitle("New directory")
                 .setMessage("Enter directory name")
                 .setView(textField)
-                .setPositiveButton(
-                    "Done"
-                ) { _, _ ->
+                .setPositiveButton("Done") { _, _ ->
                     manager.makeDirectory(textField.text.toString())
                     recreate()
                 }
-                .setNegativeButton(
-                    "Cancel"
-                ) { _, _ -> }
+                .setNegativeButton("Cancel") { _, _ -> }
                 .show()
+        }
+        if(manager.parentDirectory()?.isNotEmpty() == true) {
+            findViewById<Button>(R.id.back_button).setOnClickListener {
+                intent.putExtra("path", manager.parentDirectory())
+                recreate()
+            }
+        }
+        else {
+            findViewById<Button>(R.id.back_button).visibility = View.INVISIBLE
         }
 
         val files = manager.filesList()
@@ -64,9 +70,8 @@ class ExplorerActivity : Activity() {
                     decoder.show(name)
                 }
                 else file.setOnClickListener {
-                    val explorer = Intent(this, ExplorerActivity::class.java)
-                    explorer.putExtra("path", manager.directoryRelativePath(name))
-                    startActivity(explorer)
+                    intent.putExtra("path", manager.directoryRelativePath(name))
+                    recreate()
                 }
 
                 scroll.addView(file)
