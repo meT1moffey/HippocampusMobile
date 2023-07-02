@@ -43,7 +43,7 @@ class ExplorerActivity : Activity() {
                 .setNegativeButton("Cancel") { _, _ -> }
                 .show()
         }
-        if(manager.parentDirectory()?.isNotEmpty() == true) {
+        if(manager.parentDirectory() != null) {
             findViewById<Button>(R.id.back_button).setOnClickListener {
                 intent.putExtra("path", manager.parentDirectory())
                 recreate()

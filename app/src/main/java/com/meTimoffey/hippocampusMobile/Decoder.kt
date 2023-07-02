@@ -10,14 +10,16 @@ import android.widget.Spinner
 import android.widget.Toast
 
 class Decoder(path: String, private val context: Context) {
-    private val viewActivities = mapOf(
-        "Text"  to TextViewActivity::class.java,
-        "Image" to ImageViewActivity::class.java
-    )
-    private val fileSuffixes = arrayOf(
-        "Text" to "txt",
-        "Image" to "jpg"
-    )
+    companion object {
+        val viewActivities = mapOf(
+            "Text" to TextViewActivity::class.java,
+            "Image" to ImageViewActivity::class.java
+        )
+        val fileSuffixes = mapOf(
+            "Text" to ".txt",
+            "Image" to ".jpg"
+        )
+    }
 
     private val manager = EncodedFilesManager(path)
 
@@ -25,7 +27,7 @@ class Decoder(path: String, private val context: Context) {
 
     private fun isEncoded() = filename.length >= 3 && filename.takeLast(3) == ".vo"
     private fun unencodedFilename() = if(isEncoded()) filename.dropLast(3) else filename
-    private fun filetype() = fileSuffixes.firstOrNull {
+    private fun filetype() = fileSuffixes.toList().firstOrNull {
         it.second == unencodedFilename().split(".").last()}?.first
 
     private fun launch(key: String = "") {
@@ -52,8 +54,7 @@ class Decoder(path: String, private val context: Context) {
             .setMessage("File type has not been recognised")
             .setView(dropdown)
             .setPositiveButton("Done") { _, _ ->
-                val newFiletype = "." + fileSuffixes.firstOrNull {
-                    it.first == dropdown.selectedItem.toString()}?.second
+                val newFiletype = fileSuffixes[dropdown.selectedItem.toString()]
 
                 val newName = unencodedFilename() + newFiletype + if(isEncoded()) ".vo" else ""
 

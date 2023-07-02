@@ -24,39 +24,28 @@ import java.io.FileOutputStream
 class EncodeActivity : AppCompatActivity() {
     private var uri: Uri? = null
 
-    private fun storageAvailable(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Environment.isExternalStorageManager()
-        } else {
-            checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-        }
-    }
+    private fun storageAvailable() =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) Environment.isExternalStorageManager()
+        else checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
 
     private fun requestStoragePermission() {
         val uri = Uri.parse("package:com.meTimoffey.hippocampusMobile")
 
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Warning!")
+        AlertDialog.Builder(this)
+            .setTitle("Warning!")
             .setMessage("Please allow app to store files.")
-            .setPositiveButton("Ok"
-            ) { _, _ ->
+            .setPositiveButton("Ok") { _, _ ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    startActivity(
-                        Intent(
-                            Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                            uri
-                        )
-                    )
+                    val permissionMenu = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri)
+                    startActivity(permissionMenu)
                 }
-                else {
+                else
                     requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
-                }
-            }
-        builder.create().show()
+            }.show()
     }
 
     private val loadUri = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        this.uri = uri ?: return@registerForActivityResult
+        this.uri = uri
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -71,9 +60,8 @@ class EncodeActivity : AppCompatActivity() {
             requestStoragePermission()
 
         val dropdown = findViewById<Spinner>(R.id.file_type)
-        val items = arrayOf("Text", "Image")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
-        dropdown.adapter = adapter
+        val items = Decoder.fileSuffixes.toList().onEach { it.first }
+        dropdown.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
 
         findViewById<Button>(R.id.select_button).setOnClickListener {
             if(!storageAvailable())
@@ -87,17 +75,13 @@ class EncodeActivity : AppCompatActivity() {
                             .setTitle("Text input")
                             .setMessage("Enter text to encode")
                             .setView(textField)
-                            .setPositiveButton(
-                                "Done"
-                            ) { _, _ ->
+                            .setPositiveButton("Done") { _, _ ->
                                 val cache = File(getExternalFilesDir(null), "__cache__")
                                 cache.createNewFile()
                                 FileOutputStream(cache).write(textField.text.toString().toByteArray())
                                 uri = Uri.fromFile(cache)
                             }
-                            .setNegativeButton(
-                                "Cancel"
-                            ) { _, _ -> }
+                            .setNegativeButton("Cancel") { _, _ -> }
                             .show()
                     }
                     "Image" -> loadUri.launch("image/*")
@@ -108,22 +92,15 @@ class EncodeActivity : AppCompatActivity() {
             val name = findViewById<EditText>(R.id.name_field).text.toString()
             val key = findViewById<EditText>(R.id.key_field).text.toString()
 
-            if(uri == null) {
+            if(uri == null)
                 Toast.makeText(this, "Select file to encode", Toast.LENGTH_LONG).show()
-            }
-            else if(name.isEmpty()) {
+            else if(name.isEmpty())
                 Toast.makeText(this, "Enter new file name", Toast.LENGTH_LONG).show()
-            }
             else {
-                val fileSuffix = when(dropdown.selectedItem.toString()) {
-                        "Text" -> ".txt"
-                        "Image" -> ".jpg"
-                        else -> ""
-                    }
+                val fileSuffix = Decoder.fileSuffixes[dropdown.selectedItem.toString()]
                 val fullName = name + fileSuffix + if (key.isNotEmpty()) ".vo" else ""
-                if(manager.fileExist(fullName)) {
+                if(manager.fileExist(fullName))
                     Toast.makeText(this, "File with such name already exist", Toast.LENGTH_LONG).show()
-                }
                 else {
                     val stream = contentResolver.openInputStream(uri!!)!!
                     manager.save(stream, fullName, key)
@@ -133,7 +110,7 @@ class EncodeActivity : AppCompatActivity() {
         }
         findViewById<Button>(R.id.goto_selection).setOnClickListener {
             val explorer = Intent(this, ExplorerActivity::class.java)
-            explorer.putExtra("path", manager.relativePath())
+                .putExtra("path", manager.relativePath())
             startActivity(explorer)
         }
     }
