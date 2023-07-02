@@ -60,10 +60,8 @@ class ExplorerActivity : Activity() {
                 val file = Button(this)
                 file.text = name
                 if(manager.fileExist(name)) file.setOnClickListener {
-                    val decoder = Intent(this, DecodeActivity::class.java)
-                    decoder.putExtra("filename", name)
-                    decoder.putExtra("path", manager.relativePath())
-                    startActivity(decoder)
+                    val decoder = Decoder(manager.relativePath(), this)
+                    decoder.show(name)
                 }
                 else file.setOnClickListener {
                     val explorer = Intent(this, ExplorerActivity::class.java)
