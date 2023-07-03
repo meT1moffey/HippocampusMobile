@@ -45,7 +45,7 @@ class ExplorerActivity : AppCompatActivity() {
 
         val scroll = findViewById<LinearLayout>(R.id.explorer)
         scroll.removeAllViews()
-        
+
         if (files.isEmpty()) {
             val textView = TextView(this)
             textView.text = "There is no files available"
@@ -104,5 +104,6 @@ class ExplorerActivity : AppCompatActivity() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() = goBack()
 }
