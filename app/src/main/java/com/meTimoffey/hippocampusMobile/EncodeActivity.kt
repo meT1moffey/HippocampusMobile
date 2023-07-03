@@ -22,6 +22,29 @@ import java.io.FileOutputStream
 
 
 class EncodeActivity : AppCompatActivity() {
+    private fun loadText() {
+        val textField = EditText(this)
+
+        AlertDialog.Builder(this)
+            .setTitle("Text input")
+            .setMessage("Enter text to encode")
+            .setView(textField)
+            .setPositiveButton("Done") { _, _ ->
+                val cache = File(this.getExternalFilesDir(null), "__cache__")
+                cache.createNewFile()
+                FileOutputStream(cache).write(textField.text.toString().toByteArray())
+                uri = Uri.fromFile(cache)
+            }
+            .setNegativeButton("Cancel") { _, _ -> }
+            .show()
+    }
+
+    private val loadUri = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? -> this.uri = uri }
+
+    private val gettersMap = mapOf(
+        "Text"  to ::loadText,
+        "Image" to { loadUri.launch("image/*") }
+    )
     private var uri: Uri? = null
 
     private fun storageAvailable() =
@@ -39,13 +62,8 @@ class EncodeActivity : AppCompatActivity() {
                     val permissionMenu = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri)
                     startActivity(permissionMenu)
                 }
-                else
-                    requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
+                else requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
             }.show()
-    }
-
-    private val loadUri = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        this.uri = uri
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -66,27 +84,8 @@ class EncodeActivity : AppCompatActivity() {
         findViewById<Button>(R.id.select_button).setOnClickListener {
             if(!storageAvailable())
                 requestStoragePermission()
-            else {
-                when(dropdown.selectedItem.toString()) {
-                    "Text" -> {
-                        val textField = EditText(this)
-
-                        AlertDialog.Builder(this)
-                            .setTitle("Text input")
-                            .setMessage("Enter text to encode")
-                            .setView(textField)
-                            .setPositiveButton("Done") { _, _ ->
-                                val cache = File(getExternalFilesDir(null), "__cache__")
-                                cache.createNewFile()
-                                FileOutputStream(cache).write(textField.text.toString().toByteArray())
-                                uri = Uri.fromFile(cache)
-                            }
-                            .setNegativeButton("Cancel") { _, _ -> }
-                            .show()
-                    }
-                    "Image" -> loadUri.launch("image/*")
-                }
-            }
+            else
+                gettersMap[dropdown.selectedItem.toString()]!!()
         }
         findViewById<Button>(R.id.launch).setOnClickListener {
             val name = findViewById<EditText>(R.id.name_field).text.toString()

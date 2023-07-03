@@ -28,7 +28,7 @@ class Decoder(path: String, private val context: Context) {
     private fun isEncoded() = filename.length >= 3 && filename.takeLast(3) == ".vo"
     private fun unencodedFilename() = if(isEncoded()) filename.dropLast(3) else filename
     private fun filetype() = fileSuffixes.toList().firstOrNull {
-        it.second == unencodedFilename().split(".").last()}?.first
+        it.second == "." + unencodedFilename().split(".").last()}?.first
 
     private fun launch(key: String = "") {
         val file = manager.load(filename, key)
