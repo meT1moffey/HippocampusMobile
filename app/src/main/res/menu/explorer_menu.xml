@@ -3,4 +3,12 @@
     <item
         android:title="Add file"
         android:id="@+id/add_file"/>
+
+    <item
+        android:title="Back"
+        android:id="@+id/back_button"/>
+
+    <item
+        android:title="New directory"
+        android:id="@+id/make_dir"/>
 </menu>

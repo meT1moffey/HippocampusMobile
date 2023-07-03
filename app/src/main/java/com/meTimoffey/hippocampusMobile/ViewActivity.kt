@@ -25,6 +25,7 @@ abstract class ViewActivity : Activity() {
         if (view == null) {
             Toast.makeText(this, "Key is incorrect or has been chosen incorrect file type", Toast.LENGTH_LONG).show()
             finish()
+            return
         }
         setContentView(view)
     }

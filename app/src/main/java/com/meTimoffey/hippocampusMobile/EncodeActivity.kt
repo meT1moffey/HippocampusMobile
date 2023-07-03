@@ -78,7 +78,7 @@ class EncodeActivity : AppCompatActivity() {
             requestStoragePermission()
 
         val dropdown = findViewById<Spinner>(R.id.file_type)
-        val items = Decoder.fileSuffixes.toList().onEach { it.first }
+        val items = Decoder.fileSuffixes.keys.toTypedArray()
         dropdown.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
 
         findViewById<Button>(R.id.select_button).setOnClickListener {

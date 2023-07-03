@@ -6,14 +6,26 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toolbar
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
 class ExplorerActivity : AppCompatActivity() {
     private lateinit var manager: EncodedFilesManager
+
+    private fun goBack() {
+        if(manager.parentDirectory() != null) {
+            intent.putExtra("path", manager.parentDirectory())
+            recreate()
+        }
+        else {
+            Toast.makeText(this, "This is root directory", Toast.LENGTH_LONG).show()
+        }
+    }
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,39 +37,21 @@ class ExplorerActivity : AppCompatActivity() {
             EncodedFilesManager(path)
         else
             EncodedFilesManager()
+    }
 
-//        findViewById<Button>(R.id.new_dir).setOnClickListener {
-//            val textField = EditText(this)
-//
-//            AlertDialog.Builder(this)
-//                .setTitle("New directory")
-//                .setMessage("Enter directory name")
-//                .setView(textField)
-//                .setPositiveButton("Done") { _, _ ->
-//                    manager.makeDirectory(textField.text.toString())
-//                    recreate()
-//                }
-//                .setNegativeButton("Cancel") { _, _ -> }
-//                .show()
-//        }
-//        if(manager.parentDirectory() != null) {
-//            findViewById<Button>(R.id.back_button).setOnClickListener {
-//                intent.putExtra("path", manager.parentDirectory())
-//                recreate()
-//            }
-//        }
-//        else {
-//            findViewById<Button>(R.id.back_button).visibility = View.INVISIBLE
-//        }
-
+    override fun onResume() {
+        super.onResume()
         val files = manager.filesList()
 
         val scroll = findViewById<LinearLayout>(R.id.explorer)
+        scroll.removeAllViews()
+        
         if (files.isEmpty()) {
             val textView = TextView(this)
             textView.text = "There is no files available"
             scroll.addView(textView)
-        } else {
+        }
+        else {
             files.forEach { name ->
                 val file = Button(this)
                 file.text = name
@@ -85,9 +79,30 @@ class ExplorerActivity : AppCompatActivity() {
             startActivity(encoder)
             true
         }
+        R.id.back_button -> {
+            goBack()
+            true
+        }
+        R.id.make_dir -> {
+            val textField = EditText(this)
+
+            AlertDialog.Builder(this)
+                .setTitle("New directory")
+                .setMessage("Enter directory name")
+                .setView(textField)
+                .setPositiveButton("Done") { _, _ ->
+                    manager.makeDirectory(textField.text.toString())
+                    recreate()
+                }
+                .setNegativeButton("Cancel") { _, _ -> }
+                .show()
+            true
+        }
         else -> {
             // Unreachable
             super.onOptionsItemSelected(item)
         }
     }
+
+    override fun onBackPressed() = goBack()
 }
