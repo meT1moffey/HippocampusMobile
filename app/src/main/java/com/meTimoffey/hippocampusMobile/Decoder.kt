@@ -11,15 +11,21 @@ import android.widget.Toast
 
 class Decoder(path: String, private val context: Context) {
     companion object {
-        val viewActivities = mapOf(
-            "Text" to TextViewActivity::class.java,
-            "Image" to ImageViewActivity::class.java
+        enum class Filetype { Text, Image }
+        val typeStrings = mapOf(
+            "Text" to Filetype.Text,
+            "Image" to Filetype.Image
         )
         val fileSuffixes = mapOf(
-            "Text" to ".txt",
-            "Image" to ".jpg"
+            Filetype.Text to ".txt",
+            Filetype.Image to ".jpg"
         )
     }
+
+    private val viewActivities = mapOf(
+        Filetype.Text to TextViewActivity::class.java,
+        Filetype.Image to ImageViewActivity::class.java
+    )
 
     private val manager = EncodedFilesManager(path)
 
@@ -54,7 +60,7 @@ class Decoder(path: String, private val context: Context) {
             .setMessage("File type has not been recognised")
             .setView(dropdown)
             .setPositiveButton("Done") { _, _ ->
-                val newFiletype = fileSuffixes[dropdown.selectedItem.toString()]
+                val newFiletype = typeStrings[dropdown.selectedItem.toString()]
 
                 val newName = unencodedFilename() + newFiletype + if(isEncoded()) ".vo" else ""
 

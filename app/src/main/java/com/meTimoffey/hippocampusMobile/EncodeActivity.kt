@@ -78,7 +78,7 @@ class EncodeActivity : AppCompatActivity() {
             requestStoragePermission()
 
         val dropdown = findViewById<Spinner>(R.id.file_type)
-        val items = Decoder.fileSuffixes.keys.toTypedArray()
+        val items = Decoder.typeStrings.keys.toTypedArray()
         dropdown.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
 
         findViewById<Button>(R.id.select_button).setOnClickListener {
@@ -96,7 +96,7 @@ class EncodeActivity : AppCompatActivity() {
             else if(name.isEmpty())
                 Toast.makeText(this, "Enter new file name", Toast.LENGTH_LONG).show()
             else {
-                val fileSuffix = Decoder.fileSuffixes[dropdown.selectedItem.toString()]
+                val fileSuffix = Decoder.fileSuffixes[Decoder.typeStrings[dropdown.selectedItem.toString()]]
                 val fullName = name + fileSuffix + if (key.isNotEmpty()) ".vo" else ""
                 if(manager.fileExist(fullName))
                     Toast.makeText(this, "File with such name already exist", Toast.LENGTH_LONG).show()
