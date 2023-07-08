@@ -42,8 +42,8 @@ class EncodeActivity : AppCompatActivity() {
     private val loadUri = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? -> this.uri = uri }
 
     private val gettersMap = mapOf(
-        "Text"  to ::loadText,
-        "Image" to { loadUri.launch("image/*") }
+        Decoder.Companion.Filetype.Text  to ::loadText,
+        Decoder.Companion.Filetype.Image to { loadUri.launch("image/*") }
     )
     private var uri: Uri? = null
 
@@ -85,7 +85,7 @@ class EncodeActivity : AppCompatActivity() {
             if(!storageAvailable())
                 requestStoragePermission()
             else
-                gettersMap[dropdown.selectedItem.toString()]!!()
+                gettersMap[Decoder.typeStrings[dropdown.selectedItem.toString()]]!!()
         }
         findViewById<Button>(R.id.launch).setOnClickListener {
             val name = findViewById<EditText>(R.id.name_field).text.toString()
