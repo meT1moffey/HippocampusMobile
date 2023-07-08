@@ -11,20 +11,23 @@ import android.widget.Toast
 
 class Decoder(path: String, private val context: Context) {
     companion object {
-        enum class Filetype { Text, Image }
+        enum class Filetype { Text, Image, Video }
         val typeStrings = mapOf(
             "Text" to Filetype.Text,
-            "Image" to Filetype.Image
+            "Image" to Filetype.Image,
+            "Video" to Filetype.Video
         )
         val fileSuffixes = mapOf(
             Filetype.Text to ".txt",
-            Filetype.Image to ".jpg"
+            Filetype.Image to ".jpg",
+            Filetype.Video to ".mp4"
         )
     }
 
     private val viewActivities = mapOf(
         Filetype.Text to TextViewActivity::class.java,
-        Filetype.Image to ImageViewActivity::class.java
+        Filetype.Image to ImageViewActivity::class.java,
+        Filetype.Video to VideoViewActivity::class.java
     )
 
     private val manager = EncodedFilesManager(path)

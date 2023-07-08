@@ -6,9 +6,12 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.MediaController
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.VideoView
 import androidx.annotation.RequiresApi
+import java.io.ByteArrayInputStream
 import java.nio.charset.Charset
 
 abstract class ViewActivity : Activity() {
@@ -44,6 +47,23 @@ class ImageViewActivity : ViewActivity() {
         val view = ImageView(this)
         val img = BitmapFactory.decodeByteArray(data, 0, data.size) ?: return null
         view.setImageBitmap(img)
+        return view
+    }
+}
+
+class VideoViewActivity : ViewActivity() {
+    override fun makeView(data: ByteArray): View {
+        val view = VideoView(this)
+        val manager = EncodedFilesManager()
+        manager.save(ByteArrayInputStream(data), "__cache__", "")
+        view.setVideoPath(manager.absolutePath() + "/__cache__")
+        view.offsetLeftAndRight(0)
+
+        val controller = MediaController(this)
+        controller.setMediaPlayer(view)
+        view.setMediaController(controller)
+
+        view.start()
         return view
     }
 }

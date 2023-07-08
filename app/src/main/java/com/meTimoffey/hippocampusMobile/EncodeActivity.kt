@@ -43,7 +43,8 @@ class EncodeActivity : AppCompatActivity() {
 
     private val gettersMap = mapOf(
         Decoder.Companion.Filetype.Text  to ::loadText,
-        Decoder.Companion.Filetype.Image to { loadUri.launch("image/*") }
+        Decoder.Companion.Filetype.Image to { loadUri.launch("image/*") },
+        Decoder.Companion.Filetype.Video to { loadUri.launch("video/*")}
     )
     private var uri: Uri? = null
 

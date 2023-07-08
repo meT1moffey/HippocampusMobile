@@ -65,4 +65,6 @@ class EncodedFilesManager(directoryName : String = "Encoded Files") {
     fun parentDirectory() = File(relativePath()).parent
 
     fun renameFile(name: String, newName: String) = File(dir, name).renameTo(File(dir, newName))
+
+    fun absolutePath() = dir.absolutePath
 }

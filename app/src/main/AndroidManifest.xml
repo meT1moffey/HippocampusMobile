@@ -32,5 +32,6 @@
 
         <activity android:name=".TextViewActivity"/>
         <activity android:name=".ImageViewActivity"/>
+        <activity android:name=".VideoViewActivity"/>
     </application>
 </manifest>
